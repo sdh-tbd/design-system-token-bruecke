@@ -189,32 +189,49 @@ function semanticPaths(document, source, errors) {
 
 export function validateTokenFiles(documents) {
   const errors = [];
-  const exported = documents.find((document) => document.path.endsWith("tokens.json"));
-  if (!exported) {
-    return ["tokens.json is required"];
+  const collections = ["Primitives", "Semantic Light", "Semantic Dark"];
+  const collectionDocuments = new Map();
+
+  for (const collection of collections) {
+    const matches = documents.filter((document) =>
+      isRecord(document.value[collection]),
+    );
+    if (matches.length === 1) {
+      collectionDocuments.set(collection, matches[0]);
+    } else if (matches.length > 1) {
+      errors.push(
+        `Collection "${collection}" appears in multiple token files: ${matches
+          .map(({ path }) => path)
+          .join(", ")}`,
+      );
+    }
   }
 
-  const collections = ["Primitives", "Semantic Light", "Semantic Dark"];
   const missingCollections = collections.filter(
-    (collection) => !isRecord(exported.value[collection]),
+    (collection) => !collectionDocuments.has(collection),
   );
   if (missingCollections.length > 0) {
-    return [
-      `tokens.json is missing collections: ${missingCollections.join(", ")}`,
-    ];
+    errors.push(`Missing collections: ${missingCollections.join(", ")}`);
   }
 
+  if (errors.length > 0) {
+    return errors;
+  }
+
+  const primitivesDocument = collectionDocuments.get("Primitives");
+  const lightDocument = collectionDocuments.get("Semantic Light");
+  const darkDocument = collectionDocuments.get("Semantic Dark");
   const primitives = {
-    path: exported.path,
-    value: { Primitives: exported.value.Primitives },
+    path: primitivesDocument.path,
+    value: { Primitives: primitivesDocument.value.Primitives },
   };
   const light = {
-    path: exported.path,
-    value: { "Semantic Light": exported.value["Semantic Light"] },
+    path: lightDocument.path,
+    value: { "Semantic Light": lightDocument.value["Semantic Light"] },
   };
   const dark = {
-    path: exported.path,
-    value: { "Semantic Dark": exported.value["Semantic Dark"] },
+    path: darkDocument.path,
+    value: { "Semantic Dark": darkDocument.value["Semantic Dark"] },
   };
 
   for (const mode of [light, dark]) {

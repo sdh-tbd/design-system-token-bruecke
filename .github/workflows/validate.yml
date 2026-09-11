@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 concurrency:
   group: tokens-build-${{ github.event.pull_request.number || github.ref }}
@@ -23,6 +22,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
@@ -37,17 +38,61 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Assign merge package version
-        if: github.event_name == 'push'
+      - name: Validate token release intent
+        if: >-
+          github.event_name == 'pull_request' &&
+          !(github.head_ref == 'changeset-release/main' &&
+          github.actor == 'github-actions[bot]')
         env:
-          RUN_NUMBER: ${{ github.run_number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_REF: ${{ github.head_ref }}
         run: |
           set -euo pipefail
-          base_version="$(node --input-type=module -e \
+          changed_files="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          token_changed=false
+          changeset_changed=false
+          initializing_changesets=false
+
+          grep -Eq '^tokens/[^/]+\.tokens\.json$' <<< "$changed_files" &&
+            token_changed=true
+          git diff --diff-filter=A --name-only "$BASE_SHA"...HEAD |
+            grep -qx '.changeset/config.json' &&
+            initializing_changesets=true
+          if grep -E '^\.changeset/[^/]+\.md$' <<< "$changed_files" |
+            grep -qv '^\.changeset/README\.md$'; then
+            changeset_changed=true
+          fi
+
+          if [[ "$token_changed" == true && "$changeset_changed" == false ]]; then
+            echo "::error::A token file change requires a Changeset. Run 'pnpm changeset' and commit the generated file."
+            exit 1
+          fi
+
+          if [[ "$token_changed" == true &&
+            "$HEAD_REF" != "figma/tokens" &&
+            "$initializing_changesets" == false ]]; then
+            echo "::error::Token changes must come from the figma/tokens branch."
+            exit 1
+          fi
+
+          if [[ "$token_changed" == false && "$changeset_changed" == true ]]; then
+            echo "::error::Changesets are reserved for changes under tokens/."
+            exit 1
+          fi
+
+          base_version="$(git show "$BASE_SHA:package.json" |
+            node -e "let data=''; process.stdin.on('data', chunk => data += chunk); process.stdin.on('end', () => process.stdout.write(JSON.parse(data).version));")"
+          current_version="$(node --input-type=module -e \
             "import packageJson from './package.json' with { type: 'json' }; process.stdout.write(packageJson.version)")"
-          version="${base_version%.*}.${RUN_NUMBER}"
-          pnpm version "$version" --no-git-tag-version
-          echo "Publishing version $version" >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "$base_version" != "$current_version" ]]; then
+            if [[ "$initializing_changesets" != true ||
+              "$base_version" != "0.1.2" ||
+              "$current_version" != "0.1.9" ]]; then
+              echo "::error::Package versions are managed by the Changesets release PR."
+              exit 1
+            fi
+          fi
 
       - name: Validate Figma token export
         run: pnpm validate
@@ -55,7 +100,7 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-      - name: Build CSS and TypeScript
+      - name: Build CSS, TypeScript, and Tailwind
         run: pnpm build
 
       - name: Package generated outputs
@@ -67,9 +112,3 @@ jobs:
           name: design-tokens-${{ github.sha }}
           path: artifacts/*.tgz
           retention-days: 14
-
-      - name: Publish latest package
-        if: github.event_name == 'push'
-        run: pnpm publish --no-git-checks --tag latest
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

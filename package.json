@@ -1,6 +1,6 @@
 {
   "name": "@sdh-tbd/design-system-token-bruecke",
-  "version": "0.1.2",
+  "version": "0.1.9",
   "description": "Design tokens exported from Figma and compiled with Style Dictionary.",
   "license": "MIT",
   "type": "module",
@@ -15,6 +15,8 @@
     "./css": "./generated/css/index.css",
     "./css/light": "./generated/css/light.css",
     "./css/dark": "./generated/css/dark.css",
+    "./tailwind": "./generated/tailwind/theme.css",
+    "./tailwind/preset": "./generated/tailwind/preset.js",
     "./themes/light": {
       "types": "./generated/typescript/light/tokens.d.ts",
       "import": "./generated/typescript/light/tokens.js"
@@ -34,10 +36,14 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "check": "pnpm validate && pnpm test && pnpm build",
+    "changeset": "changeset",
+    "release": "pnpm check && changeset publish",
     "test": "node --test",
-    "validate": "node scripts/validate.mjs"
+    "validate": "node scripts/validate.mjs",
+    "version-packages": "changeset version"
   },
   "devDependencies": {
+    "@changesets/cli": "3.0.2",
     "style-dictionary": "5.5.3",
     "tokens-bruecke": "3.12.0"
   },
