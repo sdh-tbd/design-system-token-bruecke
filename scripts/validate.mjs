@@ -3,9 +3,9 @@ import process from "node:process";
 import { validateTokenFiles } from "./validation.mjs";
 
 const tokenFiles = [
-  "tokens/Primitives/Value.tokens.json",
-  "tokens/Semantic/Light.tokens.json",
-  "tokens/Semantic/Dark.tokens.json",
+  "tokens/Primitives.tokens.json",
+  "tokens/Semantic Light.tokens.json",
+  "tokens/Semantic Dark.tokens.json",
 ];
 
 const documents = await Promise.all(

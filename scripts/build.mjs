@@ -1,25 +1,37 @@
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import StyleDictionary from "style-dictionary";
 
 const generatedDirectory = new URL("../generated/", import.meta.url);
 const modes = [
   {
+    collection: "Semantic Light",
     name: "light",
-    source: "tokens/Semantic/Light.tokens.json",
+    source: "tokens/Semantic Light.tokens.json",
     selector: ":root",
   },
   {
+    collection: "Semantic Dark",
     name: "dark",
-    source: "tokens/Semantic/Dark.tokens.json",
+    source: "tokens/Semantic Dark.tokens.json",
     selector: '[data-theme="dark"]',
   },
 ];
 
 await rm(generatedDirectory, { force: true, recursive: true });
+const primitives = JSON.parse(
+  await readFile(new URL("../tokens/Primitives.tokens.json", import.meta.url), "utf8"),
+);
 
 for (const mode of modes) {
+  const exportedTheme = JSON.parse(
+    await readFile(new URL(`../${mode.source}`, import.meta.url), "utf8"),
+  );
+  const tokens = {
+    ...primitives,
+    Semantic: exportedTheme[mode.collection],
+  };
   const dictionary = new StyleDictionary({
-    source: ["tokens/Primitives/Value.tokens.json", mode.source],
+    tokens,
     usesDtcg: true,
     platforms: {
       css: {
@@ -44,7 +56,7 @@ for (const mode of modes) {
         files: [
           {
             destination: "tokens.js",
-            format: "javascript/esm",
+            format: "javascript/es6",
             options: {
               showFileHeader: false,
             },

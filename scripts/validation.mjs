@@ -176,25 +176,28 @@ function semanticPaths(document, source, errors) {
   collectTokens(document, source, tokens, errors);
   return new Set(
     [...tokens.keys()]
-      .filter((path) => path.startsWith("Semantic."))
-      .map((path) => path.slice("Semantic.".length)),
+      .filter(
+        (path) =>
+          path.startsWith("Semantic Light.") || path.startsWith("Semantic Dark."),
+      )
+      .map((path) => path.replace(/^Semantic (?:Light|Dark)\./, "")),
   );
 }
 
 export function validateTokenFiles(documents) {
   const errors = [];
   const primitives = documents.find((document) =>
-    document.path.endsWith("Primitives/Value.tokens.json"),
+    document.path.endsWith("Primitives.tokens.json"),
   );
   const light = documents.find((document) =>
-    document.path.endsWith("Semantic/Light.tokens.json"),
+    document.path.endsWith("Semantic Light.tokens.json"),
   );
   const dark = documents.find((document) =>
-    document.path.endsWith("Semantic/Dark.tokens.json"),
+    document.path.endsWith("Semantic Dark.tokens.json"),
   );
 
   if (!primitives || !light || !dark) {
-    return ["Primitives/Value, Semantic/Light, and Semantic/Dark token files are required"];
+    return ["Primitives, Semantic Light, and Semantic Dark token files are required"];
   }
 
   for (const mode of [light, dark]) {

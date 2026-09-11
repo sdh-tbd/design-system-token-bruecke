@@ -17,8 +17,8 @@ function documents(lightValue, darkValue = lightValue) {
       },
     },
   };
-  const semantic = (value) => ({
-    Semantic: {
+  const semantic = (collection, value) => ({
+    [collection]: {
       color: {
         brand: {
           "$type": "color",
@@ -29,16 +29,16 @@ function documents(lightValue, darkValue = lightValue) {
   });
   return [
     {
-      path: "tokens/Primitives/Value.tokens.json",
+      path: "tokens/Primitives.tokens.json",
       value: primitives,
     },
     {
-      path: "tokens/Semantic/Light.tokens.json",
-      value: semantic(lightValue),
+      path: "tokens/Semantic Light.tokens.json",
+      value: semantic("Semantic Light", lightValue),
     },
     {
-      path: "tokens/Semantic/Dark.tokens.json",
-      value: semantic(darkValue),
+      path: "tokens/Semantic Dark.tokens.json",
+      value: semantic("Semantic Dark", darkValue),
     },
   ];
 }
@@ -57,7 +57,7 @@ test("rejects missing aliases", () => {
 
 test("rejects semantic mode mismatches", () => {
   const input = documents("{Primitives.color.blue}");
-  input[2].value.Semantic.color = {};
+  input[2].value["Semantic Dark"].color = {};
   const errors = validateTokenFiles(input);
   assert.ok(errors.some((error) => error.includes("missing from Dark mode")));
 });

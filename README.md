@@ -24,19 +24,20 @@ file with these collections:
 | Collection | Modes | Suggested variables |
 | --- | --- | --- |
 | `Primitives` | `Value` | `color/blue/500`, `color/blue/700`, `color/gray/50`, `color/gray/900`, `color/white`, `space/2`, `space/4`, `radius/sm`, `radius/md` |
-| `Semantic` | `Light`, `Dark` | `color/background/canvas`, `color/background/brand`, `color/text/default`, `color/text/on-brand`, `color/border/default` |
+| `Semantic Light` | `Value` | `color/background/canvas`, `color/background/brand`, `color/text/default`, `color/text/on-brand`, `color/border/default` |
+| `Semantic Dark` | `Value` | The same paths as `Semantic Light`, with dark aliases |
 
 Use Color variables for colors and Number variables for spacing and radii.
-Alias every Semantic value to a Primitives value. Bind a frame's fill and text
-to the Semantic variables, then switch the frame between Light and Dark to
-verify the model.
+Alias every Semantic value to a Primitives value. Separate Semantic collections
+represent the themes because Figma Starter allows only one mode per collection.
 
 Install the Token Brücke Figma plugin and match
 [`tokens-bruecke.config.json`](./tokens-bruecke.config.json):
 
 - DTCG output enabled
 - sRGB DTCG colors
-- split by collection and mode
+- split by collection
+- split by mode disabled
 - collection names retained
 - Figma metadata disabled
 - styles disabled
@@ -46,9 +47,9 @@ shape. Replace their values with the plugin output, but keep:
 
 ```text
 tokens/
-  Primitives/Value.tokens.json
-  Semantic/Light.tokens.json
-  Semantic/Dark.tokens.json
+  Primitives.tokens.json
+  Semantic Light.tokens.json
+  Semantic Dark.tokens.json
 ```
 
 Open a pull request after exporting. CI rejects invalid values, broken aliases,

@@ -27,6 +27,6 @@
   "usePercentageOpacity": false,
   "expandEasingPresets": true,
   "splitByCollection": true,
-  "splitByMode": true,
+  "splitByMode": false,
   "omitCollectionNames": false
 }
