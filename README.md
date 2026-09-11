@@ -102,9 +102,11 @@ referenced from the consumer's user-level `.npmrc`. Never commit the token.
 
 ## Publish
 
-1. Update `version` in `package.json`.
-2. Commit the source and regenerated output.
-3. Create and push a matching tag, such as `v0.1.0`.
+Pull requests validate, build, package, and upload a downloadable workflow
+artifact. Every push to `main` repeats those steps and publishes a unique SemVer
+version to GitHub Packages with the npm dist-tag `latest`.
 
-The publish workflow verifies that the tag matches the package version and then
-publishes to GitHub Packages using the repository-scoped `GITHUB_TOKEN`.
+The major and minor numbers come from `package.json`; the patch number is the
+monotonically increasing GitHub Actions run number. For example, a base version
+of `0.1.2` can produce `0.1.8`, then `0.1.9`. Consumers can install `latest` or
+pin one of those immutable versions.
