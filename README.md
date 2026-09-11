@@ -95,8 +95,10 @@ Light is applied to `:root`; dark overrides it under
 import { dark, light } from "@sdh-tbd/design-system-token-bruecke";
 ```
 
-Reading a public package is anonymous when GitHub permits it. If authentication
-is required, set an npm token with `read:packages`; never commit the token.
+Authenticate package installs with a GitHub personal access token (classic)
+that has `read:packages`, either through `npm login --scope=@sdh-tbd
+--auth-type=legacy --registry=https://npm.pkg.github.com` or an `NPM_TOKEN`
+referenced from the consumer's user-level `.npmrc`. Never commit the token.
 
 ## Publish
 
