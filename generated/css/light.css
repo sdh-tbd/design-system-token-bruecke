@@ -1,0 +1,16 @@
+:root {
+  --ds-primitives-color-blue-500: #2563eb; /** Primary brand color */
+  --ds-primitives-color-blue-700: #1d40af;
+  --ds-primitives-color-gray-50: #f9fafb;
+  --ds-primitives-color-gray-900: #111827;
+  --ds-primitives-color-white: #ffffff;
+  --ds-primitives-space-2: 8px;
+  --ds-primitives-space-4: 16px;
+  --ds-primitives-radius-sm: 4px;
+  --ds-primitives-radius-md: 8px;
+  --ds-semantic-color-background-canvas: var(--ds-primitives-color-white);
+  --ds-semantic-color-background-brand: var(--ds-primitives-color-blue-500);
+  --ds-semantic-color-text-default: var(--ds-primitives-color-gray-900);
+  --ds-semantic-color-text-on-brand: var(--ds-primitives-color-white);
+  --ds-semantic-color-border-default: var(--ds-primitives-color-gray-50);
+}

@@ -1,0 +1,49 @@
+{
+  "name": "@sdh-tbd/design-system-token-bruecke",
+  "version": "0.1.0",
+  "description": "Design tokens exported from Figma and compiled with Style Dictionary.",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "generated"
+  ],
+  "exports": {
+    ".": {
+      "types": "./generated/typescript/index.d.ts",
+      "import": "./generated/typescript/index.js"
+    },
+    "./css": "./generated/css/index.css",
+    "./css/light": "./generated/css/light.css",
+    "./css/dark": "./generated/css/dark.css",
+    "./themes/light": {
+      "types": "./generated/typescript/light/tokens.d.ts",
+      "import": "./generated/typescript/light/tokens.js"
+    },
+    "./themes/dark": {
+      "types": "./generated/typescript/dark/tokens.d.ts",
+      "import": "./generated/typescript/dark/tokens.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sdh-tbd/design-system-token-bruecke.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "pnpm validate && pnpm build && git diff --exit-code -- generated",
+    "test": "node --test",
+    "validate": "node scripts/validate.mjs"
+  },
+  "devDependencies": {
+    "style-dictionary": "5.5.3",
+    "tokens-bruecke": "3.12.0"
+  },
+  "engines": {
+    "node": "24.x",
+    "pnpm": "10.x"
+  },
+  "packageManager": "pnpm@10.34.5"
+}
