@@ -46,6 +46,16 @@ test("accepts valid aliases and matching modes", () => {
   );
 });
 
+test("accepts collections split across Token Brücke files", () => {
+  const [document] = documents("{Primitives.color.blue}");
+  const splitDocuments = Object.entries(document.value).map(([name, value]) => ({
+    path: `tokens/${name}.tokens.json`,
+    value: { [name]: value },
+  }));
+
+  assert.deepEqual(validateTokenFiles(splitDocuments), []);
+});
+
 test("rejects missing aliases", () => {
   const errors = validateTokenFiles(documents("{Primitives.color.missing}"));
   assert.ok(errors.some((error) => error.includes("references missing token")));
