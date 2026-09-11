@@ -1,6 +1,6 @@
 {
   "name": "@sdh-tbd/design-system-token-bruecke",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Design tokens exported from Figma and compiled with Style Dictionary.",
   "license": "MIT",
   "type": "module",
@@ -33,7 +33,7 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "pnpm validate && pnpm build && git diff --exit-code -- generated",
+    "check": "pnpm validate && pnpm test && pnpm build",
     "test": "node --test",
     "validate": "node scripts/validate.mjs"
   },

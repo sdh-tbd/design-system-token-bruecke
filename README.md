@@ -42,18 +42,17 @@ Install the Token Brücke Figma plugin and match
 - Figma metadata disabled
 - styles disabled
 
-Export into `tokens/`. The committed sample files show the required paths and
-shape. Replace their values with the plugin output, but keep:
+Configure the Token Brücke GitHub or GitHub PR server to write:
 
 ```text
-tokens/
-  Primitives.tokens.json
-  Semantic Light.tokens.json
-  Semantic Dark.tokens.json
+tokens.json
 ```
 
-Open a pull request after exporting. CI rejects invalid values, broken aliases,
-light/dark mismatches, transformed-name collisions, or stale generated files.
+The file must contain the `Primitives`, `Semantic Light`, and `Semantic Dark`
+collections. Open a pull request after exporting. CI rejects invalid values,
+broken aliases, light/dark mismatches, and transformed-name collisions. It then
+builds CSS and TypeScript and uploads the packed npm package as a workflow
+artifact.
 
 ## Local development
 

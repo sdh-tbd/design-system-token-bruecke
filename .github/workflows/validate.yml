@@ -1,4 +1,4 @@
-name: Validate design tokens
+name: Build design tokens
 
 on:
   pull_request:
@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   tokens:
-    name: tokens / validate
+    name: tokens / build
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -34,8 +34,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Validate source and generated outputs
-        run: pnpm check
+      - name: Validate Figma token export
+        run: pnpm validate
 
       - name: Run tests
         run: pnpm test
+
+      - name: Build CSS and TypeScript
+        run: pnpm build
+
+      - name: Package generated outputs
+        run: pnpm pack --pack-destination artifacts
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: design-tokens-${{ github.sha }}
+          path: artifacts/*.tgz
+          retention-days: 14

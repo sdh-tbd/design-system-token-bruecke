@@ -31,8 +31,11 @@ function containsPlaceholder(value) {
 }
 
 function validateColor(value) {
+  if (typeof value === "string" && /^#[0-9a-f]{6}(?:[0-9a-f]{2})?$/i.test(value)) {
+    return;
+  }
   if (!isRecord(value) || value.colorSpace !== "srgb") {
-    return "must be a DTCG sRGB color object";
+    return "must be a hex color or DTCG sRGB color object";
   }
   if (
     !Array.isArray(value.components) ||
@@ -186,19 +189,33 @@ function semanticPaths(document, source, errors) {
 
 export function validateTokenFiles(documents) {
   const errors = [];
-  const primitives = documents.find((document) =>
-    document.path.endsWith("Primitives.tokens.json"),
-  );
-  const light = documents.find((document) =>
-    document.path.endsWith("Semantic Light.tokens.json"),
-  );
-  const dark = documents.find((document) =>
-    document.path.endsWith("Semantic Dark.tokens.json"),
-  );
-
-  if (!primitives || !light || !dark) {
-    return ["Primitives, Semantic Light, and Semantic Dark token files are required"];
+  const exported = documents.find((document) => document.path.endsWith("tokens.json"));
+  if (!exported) {
+    return ["tokens.json is required"];
   }
+
+  const collections = ["Primitives", "Semantic Light", "Semantic Dark"];
+  const missingCollections = collections.filter(
+    (collection) => !isRecord(exported.value[collection]),
+  );
+  if (missingCollections.length > 0) {
+    return [
+      `tokens.json is missing collections: ${missingCollections.join(", ")}`,
+    ];
+  }
+
+  const primitives = {
+    path: exported.path,
+    value: { Primitives: exported.value.Primitives },
+  };
+  const light = {
+    path: exported.path,
+    value: { "Semantic Light": exported.value["Semantic Light"] },
+  };
+  const dark = {
+    path: exported.path,
+    value: { "Semantic Dark": exported.value["Semantic Dark"] },
+  };
 
   for (const mode of [light, dark]) {
     const tokens = new Map();

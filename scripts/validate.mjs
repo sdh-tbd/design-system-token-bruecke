@@ -2,11 +2,7 @@ import { readFile } from "node:fs/promises";
 import process from "node:process";
 import { validateTokenFiles } from "./validation.mjs";
 
-const tokenFiles = [
-  "tokens/Primitives.tokens.json",
-  "tokens/Semantic Light.tokens.json",
-  "tokens/Semantic Dark.tokens.json",
-];
+const tokenFiles = ["tokens.json"];
 
 const documents = await Promise.all(
   tokenFiles.map(async (path) => {

@@ -6,29 +6,24 @@ const modes = [
   {
     collection: "Semantic Light",
     name: "light",
-    source: "tokens/Semantic Light.tokens.json",
     selector: ":root",
   },
   {
     collection: "Semantic Dark",
     name: "dark",
-    source: "tokens/Semantic Dark.tokens.json",
     selector: '[data-theme="dark"]',
   },
 ];
 
 await rm(generatedDirectory, { force: true, recursive: true });
-const primitives = JSON.parse(
-  await readFile(new URL("../tokens/Primitives.tokens.json", import.meta.url), "utf8"),
+const exportedTokens = JSON.parse(
+  await readFile(new URL("../tokens.json", import.meta.url), "utf8"),
 );
 
 for (const mode of modes) {
-  const exportedTheme = JSON.parse(
-    await readFile(new URL(`../${mode.source}`, import.meta.url), "utf8"),
-  );
   const tokens = {
-    ...primitives,
-    Semantic: exportedTheme[mode.collection],
+    Primitives: exportedTokens.Primitives,
+    Semantic: exportedTokens[mode.collection],
   };
   const dictionary = new StyleDictionary({
     tokens,
