@@ -1,6 +1,6 @@
 {
   "name": "@sdh-tbd/design-system-token-bruecke",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Design tokens exported from Figma and compiled with Style Dictionary.",
   "license": "MIT",
   "type": "module",
