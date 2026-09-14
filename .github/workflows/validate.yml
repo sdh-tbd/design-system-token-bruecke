@@ -45,7 +45,7 @@ jobs:
         if: >-
           github.event_name == 'pull_request' &&
           !(github.head_ref == 'changeset-release/main' &&
-          github.actor == 'github-actions[bot]')
+          github.event.pull_request.head.repo.full_name == github.repository)
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_REF: ${{ github.head_ref }}
