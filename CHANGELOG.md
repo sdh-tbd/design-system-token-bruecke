@@ -1,5 +1,11 @@
 # @sdh-tbd/design-system-token-bruecke
 
+## 0.2.4
+
+### Patch Changes
+
+- Update design tokens from Figma.
+
 ## 0.2.3
 
 ### Patch Changes
