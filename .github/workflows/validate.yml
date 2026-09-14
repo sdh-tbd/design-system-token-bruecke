@@ -5,17 +5,96 @@ on:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Base commit used to validate an automated Changeset
+        required: true
+        type: string
+      head_ref:
+        description: Pull request branch containing the automated Changeset
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: tokens-build-${{ github.event.pull_request.number || github.ref }}
+  group: >-
+    tokens-build-${{ github.event.pull_request.number ||
+    inputs.head_ref || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  token-changeset:
+    name: tokens / changeset
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: write
+    outputs:
+      created: ${{ steps.create.outputs.created }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: >-
+            ${{ github.event_name == 'pull_request' &&
+            github.event.pull_request.head.repo.full_name == github.repository &&
+            github.head_ref == 'figma/tokens' &&
+            github.head_ref || github.ref }}
+
+      - name: Create Changeset for Figma token updates
+        id: create
+        if: >-
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          github.head_ref == 'figma/tokens'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GH_TOKEN: ${{ github.token }}
+          HEAD_REF: ${{ github.head_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          changed_files="$(git diff --name-only "$BASE_SHA"...HEAD)"
+
+          if ! grep -Eq '^tokens/[^/]+\.tokens\.json$' <<< "$changed_files"; then
+            exit 0
+          fi
+
+          if grep -E '^\.changeset/[^/]+\.md$' <<< "$changed_files" |
+            grep -qv '^\.changeset/README\.md$'; then
+            exit 0
+          fi
+
+          changeset=".changeset/figma-token-update-${PR_NUMBER}.md"
+          printf '%s\n' \
+            '---' \
+            '"@sdh-tbd/design-system-token-bruecke": patch' \
+            '---' \
+            '' \
+            'Update design tokens from Figma.' \
+            > "$changeset"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$changeset"
+          git commit -m "chore: add token update changeset"
+          git push origin "HEAD:${HEAD_REF}"
+          gh workflow run validate.yml \
+            --ref "$HEAD_REF" \
+            -f base_sha="$BASE_SHA" \
+            -f head_ref="$HEAD_REF"
+          echo "created=true" >> "$GITHUB_OUTPUT"
+
   tokens:
     name: tokens / build
+    needs: token-changeset
+    if: needs.token-changeset.outputs.created != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -40,12 +119,13 @@ jobs:
 
       - name: Validate token release intent
         if: >-
-          github.event_name == 'pull_request' &&
-          !(github.head_ref == 'changeset-release/main' &&
+          (github.event_name == 'pull_request' ||
+          github.event_name == 'workflow_dispatch') &&
+          !((github.head_ref || inputs.head_ref) == 'changeset-release/main' &&
           github.actor == 'github-actions[bot]')
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_REF: ${{ github.head_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
+          HEAD_REF: ${{ github.head_ref || inputs.head_ref }}
         run: |
           set -euo pipefail
           changed_files="$(git diff --name-only "$BASE_SHA"...HEAD)"

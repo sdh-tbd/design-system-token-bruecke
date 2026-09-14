@@ -4,7 +4,16 @@
       "blue": {
         "500": {
           "$type": "color",
-          "$value": "#2563eb",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.1450980392156863,
+              0.38823529411764707,
+              0.9215686274509803
+            ],
+            "alpha": 1,
+            "hex": "#2563eb"
+          },
           "$description": "",
           "$extensions": {
             "mode": {}
@@ -12,7 +21,16 @@
         },
         "700": {
           "$type": "color",
-          "$value": "#1d40af",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.11372549019607843,
+              0.25098039215686274,
+              0.6862745098039216
+            ],
+            "alpha": 1,
+            "hex": "#1d40af"
+          },
           "$description": "",
           "$extensions": {
             "mode": {}
@@ -22,7 +40,16 @@
       "gray": {
         "50": {
           "$type": "color",
-          "$value": "#f9fafb",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9764705882352941,
+              0.9803921568627451,
+              0.984313725490196
+            ],
+            "alpha": 1,
+            "hex": "#f9fafb"
+          },
           "$description": "",
           "$extensions": {
             "mode": {}
@@ -30,7 +57,16 @@
         },
         "900": {
           "$type": "color",
-          "$value": "#111827",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.06666666666666667,
+              0.09411764705882353,
+              0.15294117647058825
+            ],
+            "alpha": 1,
+            "hex": "#111827"
+          },
           "$description": "",
           "$extensions": {
             "mode": {}
@@ -39,7 +75,16 @@
       },
       "white": {
         "$type": "color",
-        "$value": "#ffffff",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
         "$description": "",
         "$extensions": {
           "mode": {}
@@ -93,17 +138,19 @@
           "mode": {}
         }
       }
-    }
-  },
-  "$extensions": {
-    "tokens-bruecke-meta": {
-      "useDTCG": true,
-      "spec": "https://www.designtokens.org/tr/2025.10/format/",
-      "colorMode": "hex",
-      "variableCollections": [
-        "Primitives"
-      ],
-      "createdAt": "2026-09-11T11:00:41.673Z"
+    },
+    "$extensions": {
+      "tokens-bruecke-meta": {
+        "useDTCG": true,
+        "spec": "https://www.designtokens.org/tr/2025.10/format/",
+        "colorMode": "srgb-dtcg",
+        "variableCollections": [
+          "Primitives",
+          "Semantic Light",
+          "Semantic Dark"
+        ],
+        "createdAt": "2026-09-14T10:28:08.278Z"
+      }
     }
   }
 }

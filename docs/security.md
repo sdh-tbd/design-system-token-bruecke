@@ -216,9 +216,12 @@ path in the repository if stolen, so reviewers must reject pull requests that
 touch anything beyond the expected token file.
 
 Publishing must run only after a reviewed Changesets version pull request is
-merged to `main`. Token changes must include a Changeset, while unrelated
-repository changes must not. Use the workflow's ephemeral `GITHUB_TOKEN` for
-GitHub Packages; do not reuse the designer PAT.
+merged to `main`. A dedicated preflight job uses its ephemeral `GITHUB_TOKEN`
+to add a patch Changeset only to same-repository pull requests from
+`figma/tokens`; it does not install dependencies or execute pull-request code
+with write access. Token changes must include a Changeset, while unrelated
+repository changes must not. Use the release workflow's ephemeral
+`GITHUB_TOKEN` for GitHub Packages; do not reuse the designer PAT.
 Consider a protected GitHub Environment for production publication if a package
 change has a significant downstream blast radius.
 

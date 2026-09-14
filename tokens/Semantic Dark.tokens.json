@@ -47,17 +47,19 @@
           }
         }
       }
-    }
-  },
-  "$extensions": {
-    "tokens-bruecke-meta": {
-      "useDTCG": true,
-      "spec": "https://www.designtokens.org/tr/2025.10/format/",
-      "colorMode": "hex",
-      "variableCollections": [
-        "Semantic Dark"
-      ],
-      "createdAt": "2026-09-11T11:00:41.673Z"
+    },
+    "$extensions": {
+      "tokens-bruecke-meta": {
+        "useDTCG": true,
+        "spec": "https://www.designtokens.org/tr/2025.10/format/",
+        "colorMode": "srgb-dtcg",
+        "variableCollections": [
+          "Primitives",
+          "Semantic Light",
+          "Semantic Dark"
+        ],
+        "createdAt": "2026-09-14T10:28:08.278Z"
+      }
     }
   }
 }
