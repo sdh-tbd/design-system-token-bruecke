@@ -6,6 +6,7 @@ on:
     paths:
       - ".changeset/**"
       - "package.json"
+      - "tokens/**"
 
 permissions:
   contents: write
@@ -40,6 +41,31 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Create default Changeset for merged token updates
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          changed_files="$(git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA")"
+
+          if ! grep -Eq '^tokens/[^/]+\.tokens\.json$' <<< "$changed_files"; then
+            exit 0
+          fi
+
+          if find .changeset -maxdepth 1 -type f -name '*.md' \
+            ! -name 'README.md' -print -quit |
+            grep -q .; then
+            exit 0
+          fi
+
+          printf '%s\n' \
+            '---' \
+            '"@sdh-tbd/design-system-token-bruecke": patch' \
+            '---' \
+            '' \
+            'Update design tokens from Figma.' \
+            > .changeset/automated-figma-token-update.md
 
       - name: Create version PR or publish package
         uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2

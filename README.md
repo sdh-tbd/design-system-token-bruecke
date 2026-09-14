@@ -152,8 +152,8 @@ referenced from the consumer's user-level `.npmrc`. Never commit the token.
 ## Publish
 
 Pull requests validate, build, package, and upload a downloadable workflow
-artifact. For pull requests from `figma/tokens`, CI automatically adds a patch
-Changeset when token files change. Review its release impact deliberately:
+artifact. After a `figma/tokens` pull request merges, the release workflow
+automatically creates a patch Changeset in its workspace:
 
 | Change | SemVer bump |
 | --- | --- |
@@ -161,9 +161,9 @@ Changeset when token files change. Review its release impact deliberately:
 | Backward-compatible token added | `minor` |
 | Token removed or renamed | `major` |
 
-Edit the generated Changeset before merging when the release requires a
-`minor` or `major` bump. For token pull requests from any other branch, run
-`pnpm changeset` and commit the generated file manually.
+When a release requires a `minor` or `major` bump, run `pnpm changeset` before
+merging and commit the generated file. The release workflow uses that explicit
+Changeset instead of generating the default patch.
 
 After the token pull request merges, Changesets opens or updates a version pull
 request. That PR applies the next contiguous version to `package.json` and the
